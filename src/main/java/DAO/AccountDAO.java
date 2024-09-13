@@ -11,19 +11,18 @@ public class AccountDAO {
 
     public Account SelectAccount(int account_id)
     {
-        String sql = "SELECT * FROM Account WHERE ?;";
+        String sql = "SELECT * FROM account WHERE account_id = ?;";
         try
         {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, account_id);
             ResultSet rs = ps.executeQuery();
-            while(rs.next())
+            if(rs.next())
             {
-                Account acc = new Account(
+                return  new Account(
                         rs.getInt("account_id"), 
                         rs.getString("username"), 
                         rs.getString("password"));
-                return acc;
             }
         }
         catch(SQLException e)
@@ -98,15 +97,12 @@ public class AccountDAO {
                 PreparedStatement ps = conn.prepareStatement(sql);
                 ps.setString(1, user.getUsername());
                 ps.setString(2, user.getPassword());
-                ResultSet rs = ps.executeQuery();
-                while(rs.next())
+                int rows = ps.executeUpdate();
+                if(rows <= 0)
                 {
-                    Account acc = new Account(
-                            rs.getInt("account_id"), 
-                            rs.getString("username"), 
-                            rs.getString("password"));
-                    return acc;
+                    return null;
                 }
+                return SelectAccount(user.getUsername(), user.getPassword());
             }
             catch(SQLException e)
             {

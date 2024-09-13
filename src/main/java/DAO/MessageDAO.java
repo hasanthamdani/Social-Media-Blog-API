@@ -62,11 +62,38 @@ public class MessageDAO
     }
     public Message selectMessage(int message_id)
     {
-        String sql = "SELECT * FROM Account WHERE message_id = ?;";
+        String sql = "SELECT * FROM Message WHERE message_id = ?;";
         try
         {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, message_id);
+
+            ResultSet rs = ps.executeQuery();
+            while(rs.next())
+            {
+                return  new Message(
+                        rs.getInt("message_id"), 
+                        rs.getInt("posted_by"), 
+                        rs.getString("message_text"),
+                        rs.getLong("time_posted_epoch"));
+            }
+        }
+        catch(SQLException e)
+        {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
+    public Message selectMessage(int posted_by, String message_text, long time_posted_epoch)
+    {
+        String sql = "SELECT * FROM Message WHERE posted_by = ? AND message_text = ? AND time_posted_epoch = ?;";
+        try
+        {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, posted_by);
+            ps.setString(2, message_text);
+            ps.setLong(3, time_posted_epoch);
 
             ResultSet rs = ps.executeQuery();
             while(rs.next())
@@ -86,17 +113,18 @@ public class MessageDAO
 
         return null;
     }
-
     public Message deleteMessage(int message_id)
     {
-        String sql = "DELETE * FROM Account WHERE message_id = ?;";
+        String sql = "DELETE FROM Message WHERE message_id = ?;";
         
         try
         {
             Message original = selectMessage(message_id);
+            
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, message_id);
             int rows = ps.executeUpdate();
+            
             if(rows <= 0)
             {
                 return null;
@@ -136,7 +164,7 @@ public class MessageDAO
     }
     public Message insertMessage(Message message)
     {
-        String sql = "INSERT INTO Message(posted_by, message_text, time_posted_epoch) VALUES(?, ?, ?);";
+        String sql = "INSERT INTO message(posted_by, message_text, time_posted_epoch) VALUES(?, ?, ?);";
         try
         {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -144,17 +172,8 @@ public class MessageDAO
             ps.setInt(1, message.getPosted_by());
             ps.setString(2, message.getMessage_text());
             ps.setLong(3, message.getTime_posted_epoch());
-
-            ResultSet rs = ps.executeQuery();
-
-            while(rs.next())
-            {
-              Message message_with_ID = new Message(rs.getInt("message_id"),
-                                                    rs.getInt("posted_by"),
-                                                    rs.getString("message_text"),
-                                                    rs.getLong("time_posted_epoch"));
-              return message_with_ID; 
-            }
+            ps.executeUpdate();
+            return selectMessage(message.getPosted_by(), message.getMessage_text(), message.getTime_posted_epoch());
         }
         catch(SQLException e)
         {

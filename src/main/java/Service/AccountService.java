@@ -39,7 +39,7 @@ public class AccountService {
     {
         if
         (
-        ((newPerson.getUsername() != null) || (newPerson.getUsername() != "")) && 
+        ((newPerson.getUsername() != null) && (newPerson.getUsername().trim() != "")) && 
         (newPerson.getPassword().length() >= 4) &&
         (accountDAO.SelectAccount(newPerson.getUsername()) == null)
         )
