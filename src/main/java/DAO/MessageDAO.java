@@ -5,10 +5,18 @@ import java.sql.*;
 import Util.ConnectionUtil;
 import java.util.*;
 
+/**
+ * Data Access Object for Messages
+ * Implementation of Database Access Logic for H2 Database
+ */
 public class MessageDAO 
 {
     private Connection conn = ConnectionUtil.getConnection();
 
+    /**
+     * Select all Messages from Database
+     * @return List<Message> for all Accounts
+     */
     public List<Message> selectAllMessages()
     {
             String sql = "SELECT * FROM Message;";
@@ -34,6 +42,12 @@ public class MessageDAO
     
             return null;
     }
+    /**
+     * Select all Messages from Database
+     * Overloaded version of previous Method
+     * @param account_id
+     * @return List<Message> for this Account
+     */
     public List<Message> selectAllMessages(int account_id)
     {
         String sql = "SELECT * FROM Message WHERE posted_by = ?;";
@@ -60,6 +74,12 @@ public class MessageDAO
 
         return null;
     }
+
+    /**
+     * Select Message from Database
+     * @param message_id
+     * @return Message for this ID
+     */
     public Message selectMessage(int message_id)
     {
         String sql = "SELECT * FROM Message WHERE message_id = ?;";
@@ -85,6 +105,16 @@ public class MessageDAO
 
         return null;
     }
+
+    /**
+     * Select Message from Database
+     * Overloaded version of previous Method
+     * @param posted_by
+     * @param message_text
+     * @param time_posted_epoch
+     * @return Message for this Account, Text, and time posted]
+     * Used for selecting a message without knowing the ID
+     */
     public Message selectMessage(int posted_by, String message_text, long time_posted_epoch)
     {
         String sql = "SELECT * FROM Message WHERE posted_by = ? AND message_text = ? AND time_posted_epoch = ?;";
@@ -113,6 +143,12 @@ public class MessageDAO
 
         return null;
     }
+
+    /**
+     * Delete Message from Database
+     * @param message_id
+     * @return original Message before deleting
+     */
     public Message deleteMessage(int message_id)
     {
         String sql = "DELETE FROM Message WHERE message_id = ?;";
@@ -138,7 +174,12 @@ public class MessageDAO
 
         return null;
     }
-
+    /**
+     * Update Message from Database
+     * @param message_id
+     * @param newtext
+     * @return updated Message
+     */
     public Message updateMessage(int message_id, String newtext)
     {
         String sql = "UPDATE Message SET message_text = ? WHERE message_id = ?;";
@@ -162,6 +203,12 @@ public class MessageDAO
 
         return null;
     }
+
+    /**
+     * Insert Message into Database
+     * @param  message
+     * @return new Message
+     */
     public Message insertMessage(Message message)
     {
         String sql = "INSERT INTO message(posted_by, message_text, time_posted_epoch) VALUES(?, ?, ?);";
